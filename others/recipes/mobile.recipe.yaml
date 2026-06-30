@@ -1,0 +1,17 @@
+# encoding: utf-8
+---
+recipe:
+  Rx: others/recipes/mobile
+  description: >-
+    部署移动端配置 (全拼 + 九宫格, 无语法模型)
+
+patch_files:
+  t9.custom.yaml:
+    - patch/+:
+        __include: others/presets/mobile_t9:/patch
+  melt_eng.custom.yaml:
+    - patch/+:
+        __include: others/presets/mobile_melt_eng:/patch
+  rime_ice.custom.yaml:
+    - patch/+:
+        __include: others/presets/mobile_rime_ice:/patch

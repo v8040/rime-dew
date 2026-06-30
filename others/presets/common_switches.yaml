@@ -1,0 +1,6 @@
+resets:
+  switches/@1/reset: 1
+  switches/@2/reset: 0
+  switches/@3/reset: 1
+  switches/@4/reset: 0
+  switches/@5/reset: 0

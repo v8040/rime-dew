@@ -1,0 +1,126 @@
+name: "Sync & Release"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Build:
+    name: "Sync & Build"
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          ref: dev
+
+      - name: "Set up Python"
+        uses: actions/setup-python@main
+        with:
+          python-version: "3.x"
+
+      - name: "Fusion & Refactor"
+        run: python others/scripts/sync.py
+
+      - name: "Commit & Push"
+        run: |
+          sudo -E timedatectl set-timezone 'Asia/Shanghai'
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f .
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "sync: upstreams consolidated at $(date +'%Y.%m.%d') UTC+8"
+            git push -f origin HEAD:main
+          else
+            echo "No changes detected, skipping commit"
+          fi
+
+  Releases:
+    name: "Package & Release"
+    needs: Build
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          ref: main
+
+      - name: "Install Build Dependencies"
+        run: |
+          sudo -E apt-get update -qq
+          sudo -E apt-get -o 'Dpkg::Use-Pty=0' install -qqy --no-install-recommends p7zip-full
+          sudo -E timedatectl set-timezone 'Asia/Shanghai'
+          sudo -E timedatectl set-ntp true
+          timedatectl status
+
+      - name: "Clone Plum"
+        run: git clone --depth=1 https://github.com/rime/plum.git plum
+
+      - name: "Build Profiles with Plum"
+        working-directory: plum
+        env:
+          GH_REPO: ${{ github.repository }}
+        run: |
+          for i in $(seq 1 12); do
+            git ls-remote --exit-code "https://github.com/${GH_REPO}.git" refs/heads/main && break
+            sleep 5
+          done
+
+          mkdir -p ../build/{desktop,desktop-grammar,mobile,mobile-grammar}
+          mkdir -p ../dist
+
+          rime_dir="../build/desktop" \
+            bash rime-install "${GH_REPO}" \
+              "${GH_REPO}:others/recipes/desktop"
+
+          rime_dir="../build/desktop-grammar" \
+            bash rime-install "${GH_REPO}" \
+              "${GH_REPO}:others/recipes/desktop" \
+              "${GH_REPO}:others/recipes/grammar"
+
+          rime_dir="../build/mobile" \
+            bash rime-install "${GH_REPO}" \
+              "${GH_REPO}:others/recipes/mobile"
+
+          rime_dir="../build/mobile-grammar" \
+            bash rime-install "${GH_REPO}" \
+              "${GH_REPO}:others/recipes/mobile" \
+              "${GH_REPO}:others/recipes/grammar" \
+              "${GH_REPO}:others/recipes/grammar:schema=t9"
+
+      - name: "Compress with 7z"
+        run: |
+          for PROFILE in desktop desktop-grammar mobile mobile-grammar; do
+            (cd "build/${PROFILE}" && 7z a -mx=9 -bsp0 -bso0 -y "../../dist/${PROFILE}.7z" *) && \
+            echo "Successfully packaged: [${PROFILE}]"
+          done
+          echo "OUTPUT_DATE=$(date +'%Y.%m.%d')" >> ${GITHUB_ENV}
+
+      - name: "Upload Release"
+        uses: ncipollo/release-action@main
+        with:
+          name: v${{ env.OUTPUT_DATE }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest
+          allowUpdates: true
+          removeArtifacts: true
+          makeLatest: true
+          artifacts: "dist/*.7z"
+          body: |
+            ## 使用方法
+            清空并解压至 `RIME 用户目录`, 重新部署即可
+            | 包名 | 内容 |
+            |------|------|
+            | `desktop.7z` | 桌面端 (全拼, 无语法模型) |
+            | `desktop-grammar.7z` | 桌面端 (全拼 + 万象语法模型) |
+            | `mobile.7z` | 移动端 (全拼 + 九宫格, 无语法模型) |
+            | `mobile-grammar.7z` | 移动端 (全拼 + 九宫格 + 万象语法模型) |
+
+      - name: "Delete Workflows Runs"
+        if: always()
+        uses: ophub/delete-releases-workflows@main
+        with:
+          delete_workflows: true
+          workflows_keep_day: 2
+          gh_token: ${{ secrets.GITHUB_TOKEN }}

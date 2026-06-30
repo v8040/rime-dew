@@ -1,0 +1,20 @@
+# encoding: utf-8
+---
+recipe:
+  Rx: others/recipes/desktop
+  description: >-
+    部署桌面端配置 (全拼, 无语法模型)
+
+patch_files:
+  default.custom.yaml:
+    - patch/+:
+        __include: others/presets/desktop_default:/patch
+  squirrel.custom.yaml:
+    - patch/+:
+        __include: others/presets/desktop_squirrel:/patch
+  weasel.custom.yaml:
+    - patch/+:
+        __include: others/presets/desktop_weasel:/patch
+  rime_ice.custom.yaml:
+    - patch/+:
+        __include: others/presets/desktop_rime_ice:/patch

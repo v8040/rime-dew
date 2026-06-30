@@ -1,0 +1,15 @@
+patch:
+  __include: others/presets/mobile_switches:/resets
+  engine/translators/@next: table_translator@melt_eng
+  speller/algebra:
+    __include: others/presets/common_algebra:/algebra
+    __append:
+      - derive/^(.*)$/\U$1/
+      - xform/[ABC]/2/
+      - xform/[DEF]/3/
+      - xform/[GHI]/4/
+      - xform/[JKL]/5/
+      - xform/[MNO]/6/
+      - xform/[PQRS]/7/
+      - xform/[TUV]/8/
+      - xform/[WXYZ]/9/

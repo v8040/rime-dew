@@ -1,0 +1,6 @@
+algebra:
+  __include: others/presets/common_algebra:/algebra
+  __append:
+    - derive/([aeio])ng$/$1mg/
+    - derive/([gkh]|zh|sh)ua$/$1au/
+    - derive/^([wghk])ai$/$1ia/

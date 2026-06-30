@@ -1,0 +1,7 @@
+patch:
+  style/candidate_list_layout: linear
+  style/color_scheme: native
+  style/color_scheme_dark: native
+  style/comment_font_face: PingFangSC
+  style/font_face: PingFangSC
+  style/label_font_face: Monaco
