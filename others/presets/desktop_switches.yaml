@@ -1,0 +1,3 @@
+resets:
+  __include: others/presets/common_switches:/resets
+  switches/@0/reset: 1

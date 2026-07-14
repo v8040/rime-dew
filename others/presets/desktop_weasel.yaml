@@ -1,0 +1,7 @@
+patch:
+  style/horizontal: true
+  style/color_scheme: google
+  style/color_scheme_dark: purity_of_form_custom
+  style/comment_font_face: Microsoft YaHei
+  style/font_face: Microsoft YaHei
+  style/label_font_face: Consolas

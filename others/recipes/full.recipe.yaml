@@ -1,0 +1,28 @@
+# encoding: utf-8
+---
+recipe:
+  Rx: others/recipes/full
+  description: >-
+    部署雾凇框架与中文词库 (全拼 + 九宫格 + 白霜词库 + 英文依赖)
+
+install_files:
+  - cn_dicts/*.*
+  - cn_dicts_cell/*.*
+  - en_dicts/*.*
+  - opencc/*.*
+  - lua/*.*
+  - lua/cold_word_drop/*.*
+  - default.yaml
+  - squirrel.yaml
+  - weasel.yaml
+  - rime_ice.schema.yaml
+  - rime_ice.dict.yaml
+  - t9.schema.yaml
+  - symbols_v.yaml
+  - radical_pinyin.schema.yaml
+  - radical_pinyin.dict.yaml
+  - melt_eng.schema.yaml
+  - melt_eng.dict.yaml
+  - custom_phrase.txt
+  - others/presets/*.*
+  - others/recipes/*.*

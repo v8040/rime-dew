@@ -1,0 +1,29 @@
+# encoding: utf-8
+---
+recipe:
+  Rx: others/recipes/grammar
+  args:
+    - schema=rime_ice
+  description: >-
+    配置万象 LMDG 语法模型, 指定方案:
+      - rime_ice (全拼)
+      - t9 (九宫格)
+
+download_files:
+  - wanxiang-lts-zh-hans.gram::https://github.com/amzxyz/RIME-LMDG/releases/download/LTS/wanxiang-lts-zh-hans.gram
+
+install_files:
+  - wanxiang-lts-zh-hans.gram
+
+patch_files:
+  ${schema:-rime_ice}.custom.yaml:
+    - patch/+:
+        grammar/language: wanxiang-lts-zh-hans
+        grammar/collocation_max_length: 6
+        grammar/collocation_min_length: 3
+        grammar/collocation_penalty: -14
+        grammar/non_collocation_penalty: -6
+        grammar/weak_collocation_penalty: -100
+        grammar/rear_penalty: -20
+        translator/contextual_suggestions: false
+        translator/max_homophones: 8

@@ -1,0 +1,3 @@
+patch:
+  speller/algebra/+:
+    - xlit/abcdefghijklmnopqrstuvwxyz/22233344455566677778889999/

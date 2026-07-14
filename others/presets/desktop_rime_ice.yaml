@@ -1,0 +1,4 @@
+patch:
+  __include: others/presets/desktop_switches:/resets
+  speller/algebra:
+    __include: others/presets/common_rime_ice:/algebra
